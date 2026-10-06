@@ -1314,7 +1314,7 @@ Em 06/10/2026 a arquitetura foi revisada antes do crescimento do core:
 - GitHub Actions em Windows para restore, build, testes e publish win-x64;
 - Windows App SDK disponível seletivamente para integrações modernas do Windows.
 
-O ambiente do chat não precisa ser considerado fonte de validação de build WPF. O workflow de CI do GitHub é a validação automatizada do repositório, complementada por testes manuais de comportamento visual/Windows quando necessário.
+O ambiente do chat não precisa ser considerado fonte de validação de build WPF. O workflow de CI do GitHub é a validação automatizada do repositório, complementada por testes manuais de comportamento visual/Windows quando necessário. A fundação revisada foi validada no GitHub Actions em Windows com restore, build sem erros, 5 testes aprovados, publish self-contained win-x64 e geração de artefato.
 
 Portanto, ao assumir o projeto:
 

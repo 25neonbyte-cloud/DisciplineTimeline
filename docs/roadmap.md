@@ -13,7 +13,7 @@
 - [x] testes xUnit para regras temporais;
 - [x] teste de integração SQLite;
 - [x] GitHub Actions Windows para build/test/publish;
-- [ ] confirmar CI verde;
+- [x] CI validado: build + testes + publish win-x64;
 - [ ] CRUD de tarefas;
 - [ ] criar "iniciar agora";
 - [ ] criar "definir data".
