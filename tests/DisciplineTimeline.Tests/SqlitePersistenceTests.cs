@@ -1,6 +1,7 @@
 using DisciplineTimeline.Core.Models;
 using DisciplineTimeline.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace DisciplineTimeline.Tests;
 

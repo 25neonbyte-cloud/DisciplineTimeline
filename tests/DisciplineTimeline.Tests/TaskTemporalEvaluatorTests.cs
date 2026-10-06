@@ -1,6 +1,7 @@
 using DisciplineTimeline.Core.Models;
 using DisciplineTimeline.Core.Time;
 using Microsoft.Extensions.Time.Testing;
+using Xunit;
 
 namespace DisciplineTimeline.Tests;
 
