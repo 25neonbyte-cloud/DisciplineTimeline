@@ -54,6 +54,22 @@ public sealed class TaskTemporalEvaluatorTests
     }
 
     [Fact]
+    public void OfflineAcrossMidnight_ReconstructsLateFlagForExplicitDeadline()
+    {
+        var clock = new FakeTimeProvider(new DateTimeOffset(2026, 10, 7, 8, 0, 0, TimeSpan.Zero));
+        var evaluator = new TaskTemporalEvaluator(clock);
+
+        var task = NewTask(new DateOnly(2026, 10, 6));
+        task.PlannedStartTime = new TimeOnly(14, 0);
+        task.PlannedEndTime = new TimeOnly(16, 0);
+
+        var result = evaluator.Evaluate(task);
+
+        Assert.True(result.IsLost);
+        Assert.True(result.IsLate);
+    }
+
+    [Fact]
     public void CompletedTask_PreservesHistoricalLateFlag()
     {
         var clock = new FakeTimeProvider(new DateTimeOffset(2026, 10, 7, 10, 0, 0, TimeSpan.Zero));

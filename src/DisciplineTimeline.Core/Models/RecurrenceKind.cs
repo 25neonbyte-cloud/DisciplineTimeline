@@ -1,0 +1,8 @@
+namespace DisciplineTimeline.Core.Models;
+
+public enum RecurrenceKind
+{
+    None = 0,
+    Daily = 1,
+    Weekly = 2
+}
