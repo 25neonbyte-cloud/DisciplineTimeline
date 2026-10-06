@@ -1,37 +1,73 @@
-# Arquitetura inicial
+# Arquitetura
 
 ## Objetivo
 
-Manter o núcleo de regras independente da interface e preservar histórico.
+Separar interface, regras de domínio e infraestrutura para que a lógica de disciplina temporal seja testável sem depender de WPF, relógio real ou banco de produção.
 
-## Camadas iniciais
+## Projetos
 
-- **Models**: estruturas persistidas e contratos de domínio.
-- **Services**: persistência SQLite e, nas próximas etapas, regras temporais.
-- **ViewModels**: estado de apresentação.
-- **Views/WPF**: interação com o usuário.
+### DisciplineTimeline.App
+
+Responsável por:
+
+- WPF;
+- composição via Generic Host;
+- DI;
+- logging;
+- ViewModels via CommunityToolkit.Mvvm;
+- futuras integrações de janela, tray e notificações.
+
+Windows App SDK está disponível nesta camada para APIs modernas do Windows quando necessário.
+
+### DisciplineTimeline.Core
+
+Não depende de WPF nem EF Core.
+
+Responsável por:
+
+- modelos;
+- contratos de repositório;
+- regras antifraude;
+- regras temporais;
+- métricas;
+- políticas por categoria.
+
+Toda regra dependente de relógio deve receber TimeProvider.
+
+### DisciplineTimeline.Infrastructure
+
+Responsável por:
+
+- SQLite;
+- EF Core;
+- implementação dos repositórios;
+- bootstrap do banco;
+- integrações externas ao domínio.
 
 ## Persistência
 
-SQLite local em:
+Banco local padrão:
 
-`%LOCALAPPDATA%\DisciplineTimeline\discipline-timeline.db`
+%LOCALAPPDATA%\DisciplineTimeline\discipline-timeline.db
 
-O banco possui controle explícito de versão por `SchemaInfo`.
+O bootstrap inicial usa EF Core EnsureCreated para estabelecer o schema da fundação. Antes da primeira alteração de schema de produto, o fluxo deve migrar para migrations versionadas via dotnet-ef.
 
-## Decisões relevantes
+## Testes
 
-- `OriginalPlannedDate` e `CurrentPlannedDate` são campos distintos.
+xUnit v3.
+
+Dois níveis iniciais:
+
+- testes unitários do Core com FakeTimeProvider;
+- teste de integração SQLite temporário.
+
+O CI roda em windows-latest e é a validação automatizada de build/test/publish.
+
+## Regras estruturais
+
+- OriginalPlannedDate nunca é substituída por CurrentPlannedDate.
 - flags históricas não dependem apenas do estado atual.
-- categorias são dados persistidos, não enum fechado.
-- recuperação referencia a tarefa original por `RecoveredFromTaskId`.
-- recorrência terá ocorrências independentes; não será implementada como sobrescrita do mesmo registro.
-
-## Próximas responsabilidades de domínio
-
-1. CRUD de tarefas.
-2. motor temporal de atraso/perda.
-3. reagendamento com preservação histórica.
-4. recuperação e bônus.
-5. política específica por categoria.
-6. métricas.
+- categorias são persistidas e extensíveis.
+- recuperação referencia a tarefa original.
+- recorrências devem gerar ocorrências independentes.
+- DateTime.Now e DateTime.Today não devem ser usados diretamente nas regras do domínio.

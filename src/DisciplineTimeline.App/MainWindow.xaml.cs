@@ -1,17 +1,16 @@
 using System.Windows;
-using DisciplineTimeline.Services;
-using DisciplineTimeline.ViewModels;
+using DisciplineTimeline.App.ViewModels;
 
-namespace DisciplineTimeline;
+namespace DisciplineTimeline.App;
 
 public partial class MainWindow : Window
 {
     private readonly MainViewModel _viewModel;
 
-    public MainWindow(DatabaseService database)
+    public MainWindow(MainViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = new MainViewModel(database);
+        _viewModel = viewModel;
         DataContext = _viewModel;
 
         Loaded += OnLoaded;

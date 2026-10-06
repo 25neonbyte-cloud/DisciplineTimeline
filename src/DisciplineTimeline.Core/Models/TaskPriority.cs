@@ -1,4 +1,4 @@
-namespace DisciplineTimeline.Models;
+namespace DisciplineTimeline.Core.Models;
 
 public enum TaskPriority
 {

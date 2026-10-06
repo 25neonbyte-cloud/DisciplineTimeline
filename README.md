@@ -2,41 +2,49 @@
 
 Aplicativo desktop Windows para planejamento pessoal, disciplina temporal e análise do histórico real de execução.
 
-## Stack
+## Stack atual
 
-- C#
-- .NET 8
+- C# / .NET 10 LTS
 - WPF
-- SQLite
-- Windows 10/11 x64
+- CommunityToolkit.Mvvm
+- Windows App SDK
+- SQLite + Entity Framework Core 10
+- Microsoft.Extensions.Hosting / DI / Logging
+- TimeProvider
+- xUnit v3
+- GitHub Actions em Windows
 
-## Estado atual
+## Arquitetura
 
-A branch `develop` contém a base inicial do MVP.
+- src/DisciplineTimeline.App: WPF, composição da aplicação e apresentação.
+- src/DisciplineTimeline.Core: modelos, contratos e regras de domínio.
+- src/DisciplineTimeline.Infrastructure: SQLite/EF Core e integrações.
+- tests/DisciplineTimeline.Tests: testes unitários e integração SQLite.
 
-O documento funcional de referência está em:
+A fonte funcional do projeto é docs/CONTEXTO_MESTRE.md.
 
-`docs/CONTEXTO_MESTRE.md`
+## Regra arquitetural
 
-## Princípio central
+A interface não deve decidir regras de atraso, perda, recuperação ou consistência. Regras dependentes de tempo recebem TimeProvider, permitindo testes determinísticos.
 
-O sistema deve manter separadas as dimensões de:
+## Validação
 
-- planejamento original;
-- execução real;
-- consistência temporal;
-- qualidade do planejamento.
+O workflow .github/workflows/ci.yml executa em Windows:
 
-Concluir uma tarefa não apaga atrasos, perdas ou reagendamentos anteriores.
+1. restore;
+2. build Release;
+3. testes;
+4. publish self-contained win-x64;
+5. upload do artefato.
 
 ## Build local
 
-Requisito: .NET 8 SDK em Windows.
+Requisito: .NET 10 SDK em Windows.
 
-```bat
-scripts\build-windows.bat
-```
+Execute:
 
-Saída esperada:
+    scripts\build-windows.bat
 
-`artifacts\win-x64\`
+Saída:
+
+    artifacts\win-x64\

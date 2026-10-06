@@ -670,13 +670,31 @@ Nenhuma gamificação futura deve quebrar as regras antifraude.
 
 # 27. Tecnologias escolhidas
 
-Stack definida:
+Stack revisada e aprovada em 06/10/2026:
 
 - C#
-- .NET 8
+- .NET 10 LTS
 - WPF
+- CommunityToolkit.Mvvm
+- Windows App SDK para APIs modernas do Windows quando necessário
 - SQLite
-- Windows nativo
+- Entity Framework Core 10
+- Microsoft.Extensions.Hosting
+- Microsoft.Extensions.DependencyInjection
+- Microsoft.Extensions.Logging
+- TimeProvider para toda lógica dependente de relógio
+- xUnit v3
+- GitHub Actions em runner Windows para build/test/publish
+
+Diretriz arquitetural:
+
+- WPF permanece como camada de interface;
+- regras de domínio ficam isoladas em projeto Core;
+- persistência e integrações ficam em Infrastructure;
+- a UI não deve conter regras temporais;
+- DateTime.Now/DateTime.Today não devem ser espalhados pelo domínio: lógica temporal deve depender de TimeProvider;
+- testes automatizados devem validar virada de dia, atraso, perda, recuperação e demais regras sensíveis ao tempo;
+- Windows App SDK deve ser usado seletivamente, sem transformar o projeto em WinUI 3.
 
 Motivos:
 
@@ -687,6 +705,8 @@ Motivos:
 - always-on-top;
 - aplicativo desktop real;
 - armazenamento local;
+- testabilidade determinística;
+- CI em ambiente Windows real;
 - possibilidade futura de expansão.
 
 Evitar transformar o sistema em aplicativo web local.
@@ -710,12 +730,16 @@ O usuário executará e testará o projeto posteriormente na própria máquina.
 
 # 29. Versionamento Git
 
-Estrutura recomendada:
+Estrutura vigente:
 
 ```
 DisciplineTimeline/
 ├─ src/
-│  └─ DisciplineTimeline/
+│  ├─ DisciplineTimeline.App/
+│  ├─ DisciplineTimeline.Core/
+│  └─ DisciplineTimeline.Infrastructure/
+├─ tests/
+│  └─ DisciplineTimeline.Tests/
 ├─ docs/
 │  ├─ CONTEXTO_MESTRE.md
 │  ├─ architecture.md
@@ -723,6 +747,11 @@ DisciplineTimeline/
 │  └─ roadmap.md
 ├─ scripts/
 │  └─ build-windows.bat
+├─ .github/
+│  └─ workflows/
+│     └─ ci.yml
+├─ Directory.Packages.props
+├─ global.json
 ├─ .gitignore
 ├─ README.md
 └─ DisciplineTimeline.sln
@@ -1240,7 +1269,7 @@ Mas o MVP deve continuar simples o suficiente para uso diário.
 
 Use o texto abaixo como instrução ao iniciar uma nova conversa:
 
-> Você está assumindo o desenvolvimento do projeto **Discipline Timeline**, um aplicativo desktop Windows em C#/.NET 8 + WPF + SQLite.
+> Você está assumindo o desenvolvimento do projeto **Discipline Timeline**, um aplicativo desktop Windows em C#/.NET 10 LTS + WPF + SQLite/EF Core, com arquitetura separada em App, Core e Infrastructure.
 >
 > Leia integralmente o documento `CONTEXTO_MESTRE.md` antes de propor qualquer alteração.
 >
@@ -1271,21 +1300,28 @@ Use o texto abaixo como instrução ao iniciar uma nova conversa:
 
 # 43. Estado atual do trabalho
 
-Já foi gerado anteriormente um primeiro pacote conceitual/MVP do Discipline Timeline.
+O repositório GitHub foi criado e a base técnica inicial foi implantada na branch develop.
 
-O ambiente utilizado para gerar esse pacote não possuía SDK .NET instalado, portanto a compilação não foi validada localmente naquele momento.
+Em 06/10/2026 a arquitetura foi revisada antes do crescimento do core:
 
-O usuário informou que:
+- migração de .NET 8 para .NET 10 LTS;
+- separação em App, Core e Infrastructure;
+- CommunityToolkit.Mvvm;
+- EF Core 10 + SQLite;
+- Generic Host/DI/Logging;
+- TimeProvider para regras temporais;
+- xUnit v3;
+- GitHub Actions em Windows para restore, build, testes e publish win-x64;
+- Windows App SDK disponível seletivamente para integrações modernas do Windows.
 
-- o projeto será versionado no Git;
-- ele executará/testará posteriormente na própria máquina.
+O ambiente do chat não precisa ser considerado fonte de validação de build WPF. O workflow de CI do GitHub é a validação automatizada do repositório, complementada por testes manuais de comportamento visual/Windows quando necessário.
 
 Portanto, ao assumir o projeto:
 
 1. verificar o conteúdo real do repositório;
-2. compilar;
-3. corrigir erros de build;
-4. não presumir que o MVP anterior esteja perfeito;
+2. verificar o último resultado do CI;
+3. corrigir qualquer erro de build/teste antes de avançar;
+4. não presumir que implementações anteriores estejam perfeitas;
 5. usar este documento como fonte de verdade funcional.
 
 ---

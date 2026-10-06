@@ -1,28 +1,36 @@
 # Roadmap
 
-## v0.1.0 — Core inicial
+## v0.1.0 — Fundação técnica
 
-- [x] solution e projeto WPF;
-- [x] estrutura MVVM simples;
-- [x] SQLite local;
-- [x] controle inicial de schema;
-- [x] modelos base;
+- [x] .NET 10 LTS;
+- [x] solution multiprojeto;
+- [x] WPF;
+- [x] CommunityToolkit.Mvvm;
+- [x] Generic Host / DI / Logging;
+- [x] SQLite + EF Core;
 - [x] categorias iniciais;
+- [x] TimeProvider no domínio;
+- [x] testes xUnit para regras temporais;
+- [x] teste de integração SQLite;
+- [x] GitHub Actions Windows para build/test/publish;
+- [ ] confirmar CI verde;
 - [ ] CRUD de tarefas;
 - [ ] criar "iniciar agora";
 - [ ] criar "definir data".
 
-## v0.2.0 — Timeline + métricas
+## v0.2.0 — Motor temporal + timeline
 
+- [ ] persistência de transições de atraso/perda;
+- [ ] recuperação e bônus;
+- [ ] reagendamento;
+- [ ] cancelamento;
+- [ ] recorrências;
 - [ ] timeline navegável;
-- [ ] métricas diárias;
-- [ ] métricas por ciclo/mês;
-- [ ] consistência temporal;
-- [ ] qualidade do planejamento.
+- [ ] métricas diárias e por ciclo.
 
 ## v0.3.0 — Sistema residente
 
-- [ ] notificações;
+- [ ] notificações com Windows App SDK;
 - [ ] tray;
 - [ ] iniciar com Windows;
 - [ ] always-on-top;
