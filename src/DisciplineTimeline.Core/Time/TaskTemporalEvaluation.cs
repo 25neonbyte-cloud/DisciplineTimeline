@@ -6,4 +6,4 @@ public sealed record TaskTemporalEvaluation(
     DateTimeOffset EvaluatedAt,
     bool IsLate,
     bool IsLost,
-    TaskStatus SuggestedStatus);
+    TaskState SuggestedStatus);

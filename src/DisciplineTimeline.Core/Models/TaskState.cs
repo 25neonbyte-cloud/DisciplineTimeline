@@ -1,6 +1,6 @@
 namespace DisciplineTimeline.Core.Models;
 
-public enum TaskStatus
+public enum TaskState
 {
     Planned = 0,
     InProgress = 1,

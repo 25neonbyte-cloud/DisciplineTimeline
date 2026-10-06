@@ -59,7 +59,7 @@ public partial class MainViewModel : ObservableObject
             .ToArray();
 
         PlannedCount = plannedItems.Length;
-        CompletedCount = plannedItems.Count(x => x.Status == TaskStatus.Completed);
+        CompletedCount = plannedItems.Count(x => x.Status == TaskState.Completed);
         LateCount = plannedItems.Count(x => _temporalEvaluator.Evaluate(x).IsLate);
 
         if (PlannedCount == 0)
@@ -69,7 +69,7 @@ public partial class MainViewModel : ObservableObject
         }
 
         var completedOnOperationalDate = plannedItems.Count(x =>
-            x.Status == TaskStatus.Completed &&
+            x.Status == TaskState.Completed &&
             x.CompletedAt is not null &&
             DateOnly.FromDateTime(x.CompletedAt.Value.LocalDateTime) == x.CurrentPlannedDate);
 

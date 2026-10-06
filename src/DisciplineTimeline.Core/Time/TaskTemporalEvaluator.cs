@@ -19,12 +19,12 @@ public sealed class TaskTemporalEvaluator
         var today = DateOnly.FromDateTime(now.DateTime);
         var currentTime = TimeOnly.FromDateTime(now.DateTime);
 
-        if (task.Status is TaskStatus.Completed or TaskStatus.Cancelled or TaskStatus.Lost)
+        if (task.Status is TaskState.Completed or TaskState.Cancelled or TaskState.Lost)
         {
             return new TaskTemporalEvaluation(
                 now,
                 task.HasLateFlag,
-                task.Status == TaskStatus.Lost,
+                task.Status == TaskState.Lost,
                 task.Status);
         }
 
@@ -43,6 +43,6 @@ public sealed class TaskTemporalEvaluator
             now,
             isLate,
             isLost,
-            isLost ? TaskStatus.Lost : task.Status);
+            isLost ? TaskState.Lost : task.Status);
     }
 }

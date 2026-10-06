@@ -21,7 +21,7 @@ public sealed class TaskItem
     public DateTimeOffset? ActualStartAt { get; set; }
     public DateTimeOffset? CompletedAt { get; set; }
 
-    public TaskStatus Status { get; set; } = TaskStatus.Planned;
+    public TaskState Status { get; set; } = TaskState.Planned;
 
     public bool HasLateFlag { get; set; }
     public bool HasRescheduledFlag { get; set; }

@@ -19,7 +19,7 @@ public sealed class TaskTemporalEvaluatorTests
 
         Assert.False(result.IsLate);
         Assert.False(result.IsLost);
-        Assert.Equal(TaskStatus.Planned, result.SuggestedStatus);
+        Assert.Equal(TaskState.Planned, result.SuggestedStatus);
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public sealed class TaskTemporalEvaluatorTests
         var result = evaluator.Evaluate(task);
 
         Assert.True(result.IsLost);
-        Assert.Equal(TaskStatus.Lost, result.SuggestedStatus);
+        Assert.Equal(TaskState.Lost, result.SuggestedStatus);
     }
 
     [Fact]
@@ -59,14 +59,14 @@ public sealed class TaskTemporalEvaluatorTests
         var evaluator = new TaskTemporalEvaluator(clock);
 
         var task = NewTask(new DateOnly(2026, 10, 6));
-        task.Status = TaskStatus.Completed;
+        task.Status = TaskState.Completed;
         task.HasLateFlag = true;
 
         var result = evaluator.Evaluate(task);
 
         Assert.True(result.IsLate);
         Assert.False(result.IsLost);
-        Assert.Equal(TaskStatus.Completed, result.SuggestedStatus);
+        Assert.Equal(TaskState.Completed, result.SuggestedStatus);
     }
 
     private static TaskItem NewTask(DateOnly date) => new()
@@ -76,6 +76,6 @@ public sealed class TaskTemporalEvaluatorTests
         CreatedAt = new DateTimeOffset(2026, 10, 6, 9, 0, 0, TimeSpan.Zero),
         OriginalPlannedDate = date,
         CurrentPlannedDate = date,
-        Status = TaskStatus.Planned
+        Status = TaskState.Planned
     };
 }
