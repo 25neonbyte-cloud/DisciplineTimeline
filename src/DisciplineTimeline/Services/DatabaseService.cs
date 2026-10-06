@@ -128,7 +128,7 @@ public sealed class DatabaseService
 
     private static async Task ApplyVersion1Async(SqliteConnection connection)
     {
-        await using var transaction = await connection.BeginTransactionAsync();
+        await using var transaction = connection.BeginTransaction();
 
         try
         {
