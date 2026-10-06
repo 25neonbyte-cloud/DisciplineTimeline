@@ -13,19 +13,19 @@ public partial class MainViewModel : ObservableObject
     private readonly TimeProvider _timeProvider;
 
     [ObservableProperty]
-    private string selectedDateLabel = string.Empty;
+    public partial string SelectedDateLabel { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private int plannedCount;
+    public partial int PlannedCount { get; set; }
 
     [ObservableProperty]
-    private int completedCount;
+    public partial int CompletedCount { get; set; }
 
     [ObservableProperty]
-    private int lateCount;
+    public partial int LateCount { get; set; }
 
     [ObservableProperty]
-    private string consistencyLabel = "—";
+    public partial string ConsistencyLabel { get; set; } = "—";
 
     public ObservableCollection<TaskItem> Tasks { get; } = [];
 

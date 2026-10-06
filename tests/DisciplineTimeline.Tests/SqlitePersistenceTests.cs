@@ -10,6 +10,7 @@ public sealed class SqlitePersistenceTests
     [Fact]
     public async Task EnsureCreated_SeedsInitialCategories()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var databasePath = Path.Combine(
             Path.GetTempPath(),
             $"discipline-timeline-tests-{Guid.NewGuid():N}.db");
@@ -21,12 +22,12 @@ public sealed class SqlitePersistenceTests
                 .Options;
 
             await using var db = new DisciplineTimelineDbContext(options);
-            await db.Database.EnsureCreatedAsync();
+            await db.Database.EnsureCreatedAsync(cancellationToken);
 
             var categories = await db.Categories
                 .AsNoTracking()
                 .OrderBy(x => x.Id)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             Assert.Equal(2, categories.Count);
             Assert.Equal("Miscelânia", categories[0].Name);
