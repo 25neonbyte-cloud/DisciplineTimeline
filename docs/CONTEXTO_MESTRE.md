@@ -1326,6 +1326,47 @@ Portanto, ao assumir o projeto:
 
 ---
 
+# 43.1. Estado de execução — Core de tarefas (06/10/2026)
+
+A etapa de Core de tarefas foi implementada e integrada à branch `develop` via PR #1.
+
+Implementado:
+
+- CRUD seguro de tarefas;
+- criação por **Definir data**;
+- criação por **Iniciar agora**;
+- início manual de tarefa planejada no dia operacional;
+- conclusão de tarefa;
+- persistência de flag histórica de atraso quando concluída após horário final;
+- categorias persistidas e carregadas do SQLite;
+- edição de tarefa ainda não iniciada sem sobrescrever datas planejadas;
+- exclusão física restrita a tarefa planejada sem histórico;
+- navegação simples por data para operar tarefas futuras;
+- testes unitários do serviço de tarefas;
+- teste de integração CRUD contra SQLite.
+
+Decisão de integridade:
+
+- alteração de data de uma tarefa existente não é tratada como edição comum;
+- reagendamento terá fluxo próprio na próxima etapa para preservar `OriginalPlannedDate`, flag e contador de reagendamentos;
+- tarefa já perdida não pode ser concluída pelo fluxo normal; conclusão posterior deverá usar o futuro fluxo de recuperação/bônus.
+
+Validação:
+
+- CI em Windows aprovado na branch de feature e novamente após merge em `develop`;
+- restore, build, testes, publish self-contained win-x64 e upload de artefato concluídos com sucesso.
+
+Próxima etapa objetiva:
+
+- motor temporal persistente;
+- transição automática para atraso/perda;
+- recuperação e bônus;
+- reagendamento;
+- cancelamento;
+- recorrências.
+
+---
+
 # 44. Regra final
 
 O sistema deve sempre responder à pergunta:
