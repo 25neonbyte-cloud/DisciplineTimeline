@@ -22,7 +22,7 @@
 - [x] persistir flag histórica de atraso na conclusão;
 - [x] impedir exclusão física de tarefas com histórico;
 - [x] navegação simples por data para operar tarefas futuras;
-- [ ] validar CI desta etapa.
+- [x] CI da etapa validado: build + testes + publish win-x64.
 
 ## v0.2.0 — Motor temporal + timeline
 
