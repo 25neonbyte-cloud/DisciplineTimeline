@@ -18,7 +18,7 @@ public sealed class SqlitePersistenceTests
         try
         {
             var options = new DbContextOptionsBuilder<DisciplineTimelineDbContext>()
-                .UseSqlite($"Data Source={databasePath}")
+                .UseSqlite($"Data Source={databasePath};Pooling=False")
                 .Options;
 
             await using var db = new DisciplineTimelineDbContext(options);
