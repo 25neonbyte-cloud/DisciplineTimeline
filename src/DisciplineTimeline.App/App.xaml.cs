@@ -1,5 +1,6 @@
 using System.Windows;
 using DisciplineTimeline.App.ViewModels;
+using DisciplineTimeline.Core.Services;
 using DisciplineTimeline.Core.Time;
 using DisciplineTimeline.Infrastructure;
 using DisciplineTimeline.Infrastructure.Persistence;
@@ -26,6 +27,7 @@ public partial class App : Application
 
             builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
             builder.Services.AddSingleton<TaskTemporalEvaluator>();
+            builder.Services.AddSingleton<TaskService>();
             builder.Services.AddDisciplineTimelineInfrastructure();
 
             builder.Services.AddSingleton<MainViewModel>();

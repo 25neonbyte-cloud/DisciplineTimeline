@@ -1,6 +1,6 @@
 # Roadmap
 
-## v0.1.0 — Fundação técnica
+## v0.1.0 — Fundação técnica + Core de tarefas
 
 - [x] .NET 10 LTS;
 - [x] solution multiprojeto;
@@ -14,13 +14,19 @@
 - [x] teste de integração SQLite;
 - [x] GitHub Actions Windows para build/test/publish;
 - [x] CI validado: build + testes + publish win-x64;
-- [ ] CRUD de tarefas;
-- [ ] criar "iniciar agora";
-- [ ] criar "definir data".
+- [x] CRUD seguro de tarefas;
+- [x] criar "iniciar agora";
+- [x] criar "definir data";
+- [x] iniciar tarefa planejada;
+- [x] concluir tarefa;
+- [x] persistir flag histórica de atraso na conclusão;
+- [x] impedir exclusão física de tarefas com histórico;
+- [x] navegação simples por data para operar tarefas futuras;
+- [ ] validar CI desta etapa.
 
 ## v0.2.0 — Motor temporal + timeline
 
-- [ ] persistência de transições de atraso/perda;
+- [ ] persistência automática de transições de atraso/perda;
 - [ ] recuperação e bônus;
 - [ ] reagendamento;
 - [ ] cancelamento;

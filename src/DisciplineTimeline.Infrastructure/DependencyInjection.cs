@@ -23,6 +23,7 @@ public static class DependencyInjection
             options.UseSqlite($"Data Source={databasePath}"));
 
         services.AddSingleton<ITaskRepository, EfTaskRepository>();
+        services.AddSingleton<ICategoryRepository, EfCategoryRepository>();
         services.AddSingleton<DatabaseInitializer>();
 
         return services;
