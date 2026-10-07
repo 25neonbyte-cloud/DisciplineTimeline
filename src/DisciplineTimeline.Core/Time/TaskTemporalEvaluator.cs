@@ -29,15 +29,13 @@ public sealed class TaskTemporalEvaluator
         }
 
         var isLost = today > task.CurrentPlannedDate;
-        var isLate = task.HasLateFlag;
+        var missedExplicitDeadline =
+            task.PlannedEndTime is not null &&
+            (isLost ||
+             (today == task.CurrentPlannedDate &&
+              currentTime >= task.PlannedEndTime.Value));
 
-        if (!isLost &&
-            today == task.CurrentPlannedDate &&
-            task.PlannedEndTime is { } endTime &&
-            currentTime >= endTime)
-        {
-            isLate = true;
-        }
+        var isLate = task.HasLateFlag || missedExplicitDeadline;
 
         return new TaskTemporalEvaluation(
             now,

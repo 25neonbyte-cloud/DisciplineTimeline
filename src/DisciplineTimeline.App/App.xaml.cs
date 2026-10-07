@@ -1,4 +1,5 @@
 using System.Windows;
+using DisciplineTimeline.App.Services;
 using DisciplineTimeline.App.ViewModels;
 using DisciplineTimeline.Core.Services;
 using DisciplineTimeline.Core.Time;
@@ -27,8 +28,11 @@ public partial class App : Application
 
             builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
             builder.Services.AddSingleton<TaskTemporalEvaluator>();
+            builder.Services.AddSingleton<TemporalStateService>();
+            builder.Services.AddSingleton<RecurrenceService>();
             builder.Services.AddSingleton<TaskService>();
             builder.Services.AddDisciplineTimelineInfrastructure();
+            builder.Services.AddHostedService<TemporalMaintenanceHostedService>();
 
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<MainWindow>();

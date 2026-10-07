@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DisciplineTimeline.Core.Exceptions;
 using DisciplineTimeline.Core.Models;
+using DisciplineTimeline.Core.Recurrence;
 using DisciplineTimeline.Core.Requests;
 using DisciplineTimeline.Core.Services;
 using DisciplineTimeline.Core.Time;
@@ -32,6 +33,12 @@ public partial class MainViewModel : ObservableObject
     public partial int LateCount { get; set; }
 
     [ObservableProperty]
+    public partial int LostCount { get; set; }
+
+    [ObservableProperty]
+    public partial int BonusCount { get; set; }
+
+    [ObservableProperty]
     public partial string ConsistencyLabel { get; set; } = "—";
 
     [ObservableProperty]
@@ -50,6 +57,9 @@ public partial class MainViewModel : ObservableObject
     public partial TaskPriority SelectedPriority { get; set; } = TaskPriority.Normal;
 
     [ObservableProperty]
+    public partial RecurrenceKind SelectedRecurrence { get; set; } = RecurrenceKind.None;
+
+    [ObservableProperty]
     public partial DateTime TaskPlannedDate { get; set; }
 
     [ObservableProperty]
@@ -64,6 +74,7 @@ public partial class MainViewModel : ObservableObject
     public ObservableCollection<TaskItem> Tasks { get; } = [];
     public ObservableCollection<Category> Categories { get; } = [];
     public IReadOnlyList<TaskPriority> PriorityOptions { get; } = Enum.GetValues<TaskPriority>();
+    public IReadOnlyList<RecurrenceKind> RecurrenceOptions { get; } = Enum.GetValues<RecurrenceKind>();
 
     public bool IsCreateMode => SelectedTask is null;
 
@@ -93,6 +104,17 @@ public partial class MainViewModel : ObservableObject
         => await LoadSelectedDateAsync(CancellationToken.None);
 
     [RelayCommand]
+    private async Task RefreshAsync()
+    {
+        await ExecuteUiActionAsync(async () =>
+        {
+            await _taskService.RunMaintenanceAsync();
+            await LoadSelectedDateAsync(CancellationToken.None);
+            StatusMessage = "Estados temporais atualizados.";
+        });
+    }
+
+    [RelayCommand]
     private void NewTask()
     {
         ClearEditor();
@@ -111,10 +133,13 @@ public partial class MainViewModel : ObservableObject
                 SelectedPriority,
                 DateOnly.FromDateTime(TaskPlannedDate),
                 ParseOptionalTime(PlannedStartText, "início"),
-                ParseOptionalTime(PlannedEndText, "fim"));
+                ParseOptionalTime(PlannedEndText, "fim"),
+                Recurrence: SelectedRecurrence);
 
             var created = await _taskService.CreateScheduledAsync(request);
-            StatusMessage = $"Tarefa criada para {created.CurrentPlannedDate:dd/MM/yyyy}.";
+            StatusMessage = SelectedRecurrence == RecurrenceKind.None
+                ? $"Tarefa criada para {created.CurrentPlannedDate:dd/MM/yyyy}."
+                : $"Tarefa recorrente criada a partir de {created.CurrentPlannedDate:dd/MM/yyyy}.";
 
             SelectedDate = created.CurrentPlannedDate.ToDateTime(TimeOnly.MinValue);
             await LoadSelectedDateAsync(CancellationToken.None);
@@ -171,6 +196,30 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task RescheduleSelectedAsync()
+    {
+        if (SelectedTask is null)
+        {
+            StatusMessage = "Selecione uma tarefa para reagendar.";
+            return;
+        }
+
+        await ExecuteUiActionAsync(async () =>
+        {
+            var rescheduled = await _taskService.RescheduleAsync(
+                SelectedTask.Id,
+                DateOnly.FromDateTime(TaskPlannedDate));
+
+            StatusMessage =
+                $"Reagendada para {rescheduled.CurrentPlannedDate:dd/MM/yyyy}; data original preservada em {rescheduled.OriginalPlannedDate:dd/MM/yyyy}.";
+
+            SelectedDate = rescheduled.CurrentPlannedDate.ToDateTime(TimeOnly.MinValue);
+            await LoadSelectedDateAsync(CancellationToken.None);
+            SelectById(rescheduled.Id);
+        });
+    }
+
+    [RelayCommand]
     private async Task StartSelectedAsync()
     {
         if (SelectedTask is null)
@@ -182,7 +231,9 @@ public partial class MainViewModel : ObservableObject
         await ExecuteUiActionAsync(async () =>
         {
             var started = await _taskService.StartAsync(SelectedTask.Id);
-            StatusMessage = "Tarefa iniciada.";
+            StatusMessage = started.HasLateFlag
+                ? "Tarefa iniciada com atraso histórico registrado."
+                : "Tarefa iniciada.";
 
             await LoadSelectedDateAsync(CancellationToken.None);
             SelectById(started.Id);
@@ -207,6 +258,47 @@ public partial class MainViewModel : ObservableObject
 
             await LoadSelectedDateAsync(CancellationToken.None);
             SelectById(completed.Id);
+        });
+    }
+
+    [RelayCommand]
+    private async Task CancelSelectedAsync()
+    {
+        if (SelectedTask is null)
+        {
+            StatusMessage = "Selecione uma tarefa para cancelar.";
+            return;
+        }
+
+        await ExecuteUiActionAsync(async () =>
+        {
+            var cancelled = await _taskService.CancelAsync(SelectedTask.Id);
+            StatusMessage = cancelled.HasLateFlag
+                ? "Tarefa cancelada; atraso anterior foi preservado."
+                : "Tarefa cancelada.";
+
+            await LoadSelectedDateAsync(CancellationToken.None);
+            SelectById(cancelled.Id);
+        });
+    }
+
+    [RelayCommand]
+    private async Task RecoverSelectedAsync()
+    {
+        if (SelectedTask is null)
+        {
+            StatusMessage = "Selecione uma tarefa perdida para recuperar.";
+            return;
+        }
+
+        await ExecuteUiActionAsync(async () =>
+        {
+            var recovered = await _taskService.RecoverAsync(SelectedTask.Id);
+            StatusMessage = "Bônus recuperado registrado sem alterar o dia perdido.";
+
+            SelectedDate = recovered.CurrentPlannedDate.ToDateTime(TimeOnly.MinValue);
+            await LoadSelectedDateAsync(CancellationToken.None);
+            SelectById(recovered.Id);
         });
     }
 
@@ -242,10 +334,12 @@ public partial class MainViewModel : ObservableObject
         TaskDescription = value.Description ?? string.Empty;
         SelectedCategoryId = value.CategoryId;
         SelectedPriority = value.Priority;
+        SelectedRecurrence = RecurrenceRuleFactory.Parse(value.RecurrenceRule);
         TaskPlannedDate = value.CurrentPlannedDate.ToDateTime(TimeOnly.MinValue);
         PlannedStartText = value.PlannedStartTime?.ToString("HH:mm", CultureInfo.InvariantCulture) ?? string.Empty;
         PlannedEndText = value.PlannedEndTime?.ToString("HH:mm", CultureInfo.InvariantCulture) ?? string.Empty;
-        StatusMessage = $"Editando tarefa #{value.Id}. A data não é alterada por este formulário.";
+        StatusMessage =
+            $"Tarefa #{value.Id}. Original: {value.OriginalPlannedDate:dd/MM/yyyy}; atual: {value.CurrentPlannedDate:dd/MM/yyyy}.";
     }
 
     private async Task LoadCategoriesAsync(CancellationToken cancellationToken)
@@ -283,7 +377,11 @@ public partial class MainViewModel : ObservableObject
 
         PlannedCount = plannedItems.Length;
         CompletedCount = plannedItems.Count(x => x.Status == TaskState.Completed);
-        LateCount = plannedItems.Count(x => _temporalEvaluator.Evaluate(x).IsLate);
+        LostCount = plannedItems.Count(x => x.Status == TaskState.Lost);
+        LateCount = plannedItems.Count(x => x.HasLateFlag || _temporalEvaluator.Evaluate(x).IsLate);
+        BonusCount = items.Count(x =>
+            x.RecoveredFromTaskId is not null &&
+            x.Status == TaskState.Completed);
 
         if (PlannedCount == 0)
         {
@@ -305,6 +403,7 @@ public partial class MainViewModel : ObservableObject
         TaskTitle = string.Empty;
         TaskDescription = string.Empty;
         SelectedPriority = TaskPriority.Normal;
+        SelectedRecurrence = RecurrenceKind.None;
         TaskPlannedDate = _timeProvider.GetLocalNow().Date;
         PlannedStartText = string.Empty;
         PlannedEndText = string.Empty;

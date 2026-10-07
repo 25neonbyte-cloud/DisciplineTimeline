@@ -26,13 +26,16 @@
 
 ## v0.2.0 — Motor temporal + timeline
 
-- [ ] persistência automática de transições de atraso/perda;
-- [ ] recuperação e bônus;
-- [ ] reagendamento;
-- [ ] cancelamento;
-- [ ] recorrências;
-- [ ] timeline navegável;
-- [ ] métricas diárias e por ciclo.
+- [x] persistência automática de transições de atraso/perda;
+- [x] recuperação e bônus recuperado;
+- [x] reagendamento preservando data original;
+- [x] cancelamento distinto de perda;
+- [x] recorrências com ocorrências independentes (diária e semanal no MVP);
+- [x] motor periódico de manutenção enquanto o aplicativo está ativo;
+- [x] contadores visuais de perdidas e bônus;
+- [ ] validar CI desta etapa;
+- [ ] timeline visual navegável;
+- [ ] métricas diárias e por ciclo completas.
 
 ## v0.3.0 — Sistema residente
 

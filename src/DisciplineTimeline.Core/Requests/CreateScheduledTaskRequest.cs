@@ -10,4 +10,5 @@ public sealed record CreateScheduledTaskRequest(
     DateOnly PlannedDate,
     TimeOnly? PlannedStartTime,
     TimeOnly? PlannedEndTime,
-    long? CycleId = null);
+    long? CycleId = null,
+    RecurrenceKind Recurrence = RecurrenceKind.None);
