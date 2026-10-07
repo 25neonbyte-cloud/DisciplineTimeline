@@ -38,7 +38,7 @@
 - [x] métricas diárias de execução, consistência e histórico;
 - [x] métricas mensais e por ciclo: entrega, consistência, perdas, bônus, reagendamentos e qualidade do planejamento;
 - [x] primeiro ciclo registrado no SQLite sem alterar schema;
-- [ ] validar CI da etapa;
+- [x] CI da feature e da develop aprovados: build, 29 testes e publicação win-x64;
 - [ ] validação manual de usabilidade WPF e comportamentos reais.
 
 ## v0.3.0 — Sistema residente

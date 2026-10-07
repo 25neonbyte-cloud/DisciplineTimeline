@@ -1367,6 +1367,46 @@ Próxima etapa objetiva:
 
 ---
 
+# 43.2. Estado de execução — Timeline e Métricas (06/10/2026)
+
+A etapa foi integrada à branch `develop` pelo PR #3, commit funcional
+`fc8f481297b56bac679b895c88207cb82846f4c3`.
+
+Entregas:
+
+- timeline horizontal navegável com passado, hoje e futuro diferenciados;
+- seleção por dia, navegação anterior/próximo e calendário;
+- indicadores diários de execução, consistência, atraso, perda, bônus e planejamento movido;
+- indicadores mensais e por ciclo: entrega, consistência, recuperação, perda, cancelamento,
+  reagendamento, média de mudanças e dias completos/parciais/zerados;
+- leitura histórica otimizada de SQLite, incluindo bônus recuperado posteriormente;
+- cálculos puros na camada Core, com testes automáticos;
+- ciclo inicial 06/10–25/10/2026 criado idempotentemente sem mudar o esquema do banco;
+- inicialização do banco anterior à inicialização do serviço em segundo plano.
+
+Regras de relatório:
+
+- indicadores diários ancorados na data operacional vigente;
+- relatórios mensais e por ciclo ancorados na data ORIGINAL planejada;
+- recuperação posterior conta como entrega geral, mas jamais repara consistência do dia;
+- bônus separados dos denominadores diários, progresso nunca ultrapassa 100%;
+- atraso por horário mantém flag histórica mesmo quando concluído no dia correto;
+- mudança de data aparece como alteração do planejamento original;
+- dias futuros não são classificados como zerados; dias sem tarefas exibem taxa indefinida;
+- relatórios de ciclo usam sua janela de datas originais. CycleId também é atribuído
+  a tarefas criadas dentro de ciclos conhecidos.
+
+Validação:
+
+- workflow Windows aprovado na feature e após merge na develop;
+- restore, build, 29 testes aprovados, publish win-x64 self-contained, artefato gerado;
+- execuções: feature 37551768954, develop 37552005863.
+
+Pendência: validar manualmente UX, renderização, DPI e interação no Windows do usuário.
+
+Próxima etapa: sistema residente — notificações, tray, startup, always-on-top e modo compacto.
+
+---
 # 44. Regra final
 
 O sistema deve sempre responder à pergunta:
