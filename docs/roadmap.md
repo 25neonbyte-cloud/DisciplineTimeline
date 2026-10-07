@@ -34,8 +34,12 @@
 - [x] motor periódico de manutenção enquanto o aplicativo está ativo;
 - [x] contadores visuais de perdidas e bônus;
 - [x] CI da etapa validado: build + testes + publish win-x64;
-- [ ] timeline visual navegável;
-- [ ] métricas diárias e por ciclo completas.
+- [x] timeline visual navegável com seleção de datas e distinção de passado/hoje/futuro;
+- [x] métricas diárias de execução, consistência e histórico;
+- [x] métricas mensais e por ciclo: entrega, consistência, perdas, bônus, reagendamentos e qualidade do planejamento;
+- [x] primeiro ciclo registrado no SQLite sem alterar schema;
+- [ ] validar CI da etapa;
+- [ ] validação manual de usabilidade WPF e comportamentos reais.
 
 ## v0.3.0 — Sistema residente
 

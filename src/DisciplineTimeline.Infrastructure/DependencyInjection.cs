@@ -24,6 +24,7 @@ public static class DependencyInjection
 
         services.AddSingleton<ITaskRepository, EfTaskRepository>();
         services.AddSingleton<ICategoryRepository, EfCategoryRepository>();
+        services.AddSingleton<IMetricsReadRepository, EfMetricsReadRepository>();
         services.AddSingleton<DatabaseInitializer>();
 
         return services;

@@ -31,6 +31,7 @@ public partial class App : Application
             builder.Services.AddSingleton<TemporalStateService>();
             builder.Services.AddSingleton<RecurrenceService>();
             builder.Services.AddSingleton<TaskService>();
+            builder.Services.AddSingleton<MetricsService>();
             builder.Services.AddDisciplineTimelineInfrastructure();
             builder.Services.AddHostedService<TemporalMaintenanceHostedService>();
 
@@ -38,10 +39,11 @@ public partial class App : Application
             builder.Services.AddSingleton<MainWindow>();
 
             _host = builder.Build();
-            await _host.StartAsync();
 
+            // Banco e dados iniciais precisam existir antes do serviço residente iniciar.
             var initializer = _host.Services.GetRequiredService<DatabaseInitializer>();
             await initializer.InitializeAsync();
+            await _host.StartAsync();
 
             var window = _host.Services.GetRequiredService<MainWindow>();
             MainWindow = window;

@@ -71,3 +71,19 @@ O CI roda em windows-latest e é a validação automatizada de build/test/publis
 - recuperação referencia a tarefa original.
 - recorrências devem gerar ocorrências independentes.
 - DateTime.Now e DateTime.Today não devem ser usados diretamente nas regras do domínio.
+
+
+## Timeline e métricas (etapa v0.2)
+
+- \`IMetricsReadRepository\` recupera dados por intervalo, incluindo bônus recuperado
+  fora do período quando sua tarefa original está dentro dele.
+- \`MetricsSnapshot\` é puro e calcula relatórios sem EF ou WPF.
+- Os indicadores diários utilizam a data operacional corrente; alterações para outros dias
+  também aparecem na data original como registros de demandas movidas.
+- A entrega mensal/de ciclo mantém o denominador ancorado na data originalmente planejada.
+  Recuperação posterior aumenta a entrega geral, mas não corrige a consistência temporal.
+- Atraso por prazo é flag histórica mesmo quando concluído no mesmo dia (correto temporalmente).
+- O ciclo inicial (06–25/10/2026) é adicionado no primeiro bootstrap.
+- Os relatórios por ciclo são janelas pelas datas originais; novas tarefas
+  criadas dentro de ciclos conhecidos também recebem CycleId.
+- Dias futuros não são classificados como zero; dias sem planejamento têm percentual indefinido.
