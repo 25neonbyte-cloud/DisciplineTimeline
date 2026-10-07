@@ -33,7 +33,7 @@
 - [x] recorrências com ocorrências independentes (diária e semanal no MVP);
 - [x] motor periódico de manutenção enquanto o aplicativo está ativo;
 - [x] contadores visuais de perdidas e bônus;
-- [ ] validar CI desta etapa;
+- [x] CI da etapa validado: build + testes + publish win-x64;
 - [ ] timeline visual navegável;
 - [ ] métricas diárias e por ciclo completas.
 
