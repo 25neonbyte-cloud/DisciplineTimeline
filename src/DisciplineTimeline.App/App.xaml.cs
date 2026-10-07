@@ -31,6 +31,7 @@ public partial class App : Application
             builder.Services.AddSingleton<TemporalStateService>();
             builder.Services.AddSingleton<RecurrenceService>();
             builder.Services.AddSingleton<TaskService>();
+            builder.Services.AddSingleton<MetricsService>();
             builder.Services.AddDisciplineTimelineInfrastructure();
             builder.Services.AddHostedService<TemporalMaintenanceHostedService>();
 

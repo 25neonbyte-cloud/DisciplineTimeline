@@ -80,10 +80,12 @@ public partial class MainViewModel : ObservableObject
 
     public MainViewModel(
         TaskService taskService,
+        MetricsService metricsService,
         TaskTemporalEvaluator temporalEvaluator,
         TimeProvider timeProvider)
     {
         _taskService = taskService;
+        _metricsService = metricsService;
         _temporalEvaluator = temporalEvaluator;
         _timeProvider = timeProvider;
 
@@ -95,7 +97,9 @@ public partial class MainViewModel : ObservableObject
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
         await LoadCategoriesAsync(cancellationToken);
+        await LoadCyclesAsync(cancellationToken);
         await LoadSelectedDateAsync(cancellationToken);
+        _initializedMetrics = true;
         ClearEditor();
     }
 
@@ -134,6 +138,7 @@ public partial class MainViewModel : ObservableObject
                 DateOnly.FromDateTime(TaskPlannedDate),
                 ParseOptionalTime(PlannedStartText, "início"),
                 ParseOptionalTime(PlannedEndText, "fim"),
+                CycleId: CycleForDate(TaskPlannedDate),
                 Recurrence: SelectedRecurrence);
 
             var created = await _taskService.CreateScheduledAsync(request);
@@ -157,7 +162,8 @@ public partial class MainViewModel : ObservableObject
                 TaskDescription,
                 SelectedCategoryId,
                 SelectedPriority,
-                ParseOptionalTime(PlannedEndText, "fim"));
+                ParseOptionalTime(PlannedEndText, "fim"),
+                CycleId: CycleForDate(_timeProvider.GetLocalNow().Date));
 
             var created = await _taskService.StartNowAsync(request);
             StatusMessage = $"Tarefa iniciada às {created.ActualStartAt:HH:mm}.";
@@ -359,43 +365,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     private async Task LoadSelectedDateAsync(CancellationToken cancellationToken)
-    {
-        var date = DateOnly.FromDateTime(SelectedDate);
-        SelectedDateLabel = SelectedDate.ToString("dddd, dd 'de' MMMM 'de' yyyy");
-
-        var items = await _taskService.GetForDateAsync(date, cancellationToken);
-
-        Tasks.Clear();
-        foreach (var item in items)
-        {
-            Tasks.Add(item);
-        }
-
-        var plannedItems = items
-            .Where(x => x.RecoveredFromTaskId is null)
-            .ToArray();
-
-        PlannedCount = plannedItems.Length;
-        CompletedCount = plannedItems.Count(x => x.Status == TaskState.Completed);
-        LostCount = plannedItems.Count(x => x.Status == TaskState.Lost);
-        LateCount = plannedItems.Count(x => x.HasLateFlag || _temporalEvaluator.Evaluate(x).IsLate);
-        BonusCount = items.Count(x =>
-            x.RecoveredFromTaskId is not null &&
-            x.Status == TaskState.Completed);
-
-        if (PlannedCount == 0)
-        {
-            ConsistencyLabel = "—";
-            return;
-        }
-
-        var completedOnOperationalDate = plannedItems.Count(x =>
-            x.Status == TaskState.Completed &&
-            x.CompletedAt is not null &&
-            DateOnly.FromDateTime(x.CompletedAt.Value.LocalDateTime) == x.CurrentPlannedDate);
-
-        ConsistencyLabel = $"{completedOnOperationalDate * 100d / PlannedCount:0}%";
-    }
+        => await LoadTimelineMetricsAsync(cancellationToken);
 
     private void ClearEditor(bool keepStatusMessage = false)
     {
